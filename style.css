@@ -1,0 +1,113 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1a1a1a;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.game-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+canvas {
+    background-color: #000;
+    border: 2px solid #333;
+}
+
+.side-panel {
+    width: 300px;
+    background-color: #222;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+h2 {
+    color: #fff;
+    margin-top: 0;
+    border-bottom: 2px solid #444;
+    padding-bottom: 10px;
+}
+
+.instructions, .items-info, .settings {
+    margin-bottom: 30px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin: 10px 0;
+    padding-left: 20px;
+    position: relative;
+}
+
+.items-info li::before {
+    content: "■";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.items-info li.penetration::before {
+    color: #ff00ff;
+}
+
+.items-info li.slow::before {
+    color: #00ffff;
+}
+
+.items-info li.rainbow::before {
+    color: #ffffff;
+}
+
+.setting-item {
+    margin: 15px 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #aaa;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin: 5px 0;
+}
+
+#ballSpeedValue,
+#paddleWidthValue,
+#colorCountValue {
+    display: inline-block;
+    min-width: 30px;
+    text-align: right;
+    color: #aaa;
+}
+
+/* ゲームオーバー/クリア画面 */
+.overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    font-size: 48px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.overlay p {
+    font-size: 24px;
+    margin-top: 20px;
+}

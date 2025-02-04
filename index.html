@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ブロック崩し</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div class="side-panel">
+            <div class="instructions">
+                <h2>操作方法</h2>
+                <ul>
+                    <li>A/D: 左右移動</li>
+                    <li>スペース: ボール発射</li>
+                    <li>K: バーの色変更</li>
+                </ul>
+            </div>
+
+            <div class="items-info">
+                <h2>アイテム</h2>
+                <ul>
+                    <li class="penetration">貫通弾: ブロックを貫通します</li>
+                    <li class="slow">スロー: バー付近でボール速度が0.7倍になります</li>
+                    <li class="rainbow">レインボー: どの色のボールでも跳ね返せます</li>
+                </ul>
+            </div>
+
+            <div class="settings">
+                <h2>設定</h2>
+                <div class="setting-item">
+                    <label for="ballSpeed">ボールの速度:</label>
+                    <input type="range" id="ballSpeed" min="3" max="12" value="7">
+                    <span id="ballSpeedValue">7</span>
+                </div>
+                <div class="setting-item">
+                    <label for="paddleWidth">パドルの幅:</label>
+                    <input type="range" id="paddleWidth" min="60" max="150" value="100">
+                    <span id="paddleWidthValue">100</span>
+                </div>
+                <div class="setting-item">
+                    <label for="colorCount">色の数:</label>
+                    <input type="range" id="colorCount" min="2" max="4" value="4">
+                    <span id="colorCountValue">4</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
