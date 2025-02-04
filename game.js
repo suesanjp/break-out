@@ -1,7 +1,7 @@
 // Constants
 const CANVAS = {
-    WIDTH: 800,
-    HEIGHT: 600,
+    WIDTH: 600,
+    HEIGHT: 450,
     TOP_MARGIN: 50
 };
 
@@ -63,6 +63,7 @@ class Ball {
 
     launch() {
         this.launched = true;
+        this.speed = BALL.SPEED;
         this.dx = this.speed;
         this.dy = -this.speed;
     }
@@ -70,8 +71,10 @@ class Ball {
     move(speedMultiplier = 1) {
         if (!this.launched) return;
         
-        this.x += this.dx * speedMultiplier;
-        this.y += this.dy * speedMultiplier;
+        const currentSpeed = this.speed * speedMultiplier;
+        const ratio = currentSpeed / Math.sqrt(this.dx * this.dx + this.dy * this.dy);
+        this.x += this.dx * ratio;
+        this.y += this.dy * ratio;
     }
 
     bounceHorizontal() {
@@ -111,7 +114,7 @@ class Paddle {
         this.y = CANVAS.HEIGHT - PADDLE.HEIGHT - 5;
         this.color = COLORS[0];
         this.colorIndex = 0;
-        this.rainbowOffset = 0;
+        this.isRainbow = false;
     }
 
     move(direction, amount) {
@@ -128,15 +131,23 @@ class Paddle {
         }
     }
 
-    updateRainbow() {
-        if (this.isRainbow) {
-            this.rainbowOffset = (this.rainbowOffset + 2) % 360;
-            this.color = `hsl(${this.rainbowOffset}, 100%, 50%)`;
-        }
-    }
-
     draw(ctx) {
-        ctx.fillStyle = this.color;
+        if (this.isRainbow) {
+            const gradient = ctx.createLinearGradient(
+                this.x, this.y,
+                this.x + PADDLE.WIDTH, this.y
+            );
+            gradient.addColorStop(0, 'red');
+            gradient.addColorStop(0.17, 'orange');
+            gradient.addColorStop(0.33, 'yellow');
+            gradient.addColorStop(0.5, 'green');
+            gradient.addColorStop(0.67, 'blue');
+            gradient.addColorStop(0.83, 'indigo');
+            gradient.addColorStop(1, 'violet');
+            ctx.fillStyle = gradient;
+        } else {
+            ctx.fillStyle = this.color;
+        }
         ctx.fillRect(this.x, this.y, PADDLE.WIDTH, PADDLE.HEIGHT);
     }
 }
@@ -295,6 +306,11 @@ class EffectManager {
             slowMotion: { active: false, endTime: 0 },
             rainbow: { active: false, endTime: 0 }
         };
+        this.paddle = null;
+    }
+
+    setPaddle(paddle) {
+        this.paddle = paddle;
     }
 
     applyEffect(itemType) {
@@ -303,6 +319,10 @@ class EffectManager {
         if (this.effects[effectName]) {
             this.effects[effectName].active = true;
             this.effects[effectName].endTime = currentTime + ITEM.EFFECT_DURATION;
+
+            if (effectName === 'rainbow' && this.paddle) {
+                this.paddle.isRainbow = true;
+            }
         }
     }
 
@@ -311,6 +331,9 @@ class EffectManager {
         Object.keys(this.effects).forEach(effect => {
             if (this.effects[effect].active && currentTime > this.effects[effect].endTime) {
                 this.effects[effect].active = false;
+                if (effect === 'rainbow' && this.paddle) {
+                    this.paddle.isRainbow = false;
+                }
             }
         });
     }
@@ -324,6 +347,9 @@ class EffectManager {
             this.effects[effect].active = false;
             this.effects[effect].endTime = 0;
         });
+        if (this.paddle) {
+            this.paddle.isRainbow = false;
+        }
     }
 
     getActiveEffects() {
@@ -410,6 +436,7 @@ class Game {
         this.items = [];
         
         this.effectManager = new EffectManager();
+        this.effectManager.setPaddle(this.paddle);
         this.uiManager = new UIManager(this.ctx);
         this.soundManager = new SoundManager();
         this.settingsManager = new SettingsManager(this);
@@ -489,9 +516,6 @@ class Game {
     updatePaddle() {
         if (this.keys.a) this.paddle.move(-1, 8);
         if (this.keys.d) this.paddle.move(1, 8);
-        if (this.effectManager.isActive('rainbow')) {
-            this.paddle.updateRainbow();
-        }
     }
 
     updateBall() {
@@ -508,11 +532,13 @@ class Game {
         }
 
         let speedMultiplier = 1;
-        if (this.effectManager.isActive('slowMotion') && 
+        if (this.effectManager.isActive('slowMotion') &&
             this.ball.y + BALL.RADIUS > this.paddle.y - 50) {
             speedMultiplier = 0.7;
         }
 
+        // ボールのスピードを更新
+        this.ball.speed = BALL.SPEED;
         this.ball.move(speedMultiplier);
     }
 
